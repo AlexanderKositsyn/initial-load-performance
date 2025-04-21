@@ -15,6 +15,30 @@ import {
   TableRow,
 } from "@fe/components/table";
 
+interface StatCardProps {
+  icon: React.ReactNode;
+  value: string | number;
+  description: string;
+  pill: React.ReactNode;
+  ariaId: string;
+}
+
+const StatCard: React.FC<StatCardProps> = ({ icon, value, description, pill, ariaId }) => (
+  <Card role="region" aria-labelledby={ariaId}>
+    <CardContent>
+      <div className="blink-surface-light p-2 rounded-full inline-block">
+        {icon}
+      </div>
+      <h3 id={ariaId} className="text-xl blink-text-primary my-2">
+        {value}
+      </h3>
+      <div className="flex justify-between items-center">
+        <p className="text-sm blink-text-subdued">{description}</p>
+        {pill}
+      </div>
+    </CardContent>
+  </Card>
+);
 export const DashboardPage = () => {
   return (
     <div className="blink-text-primary flex flex-col lg:flex-row h-screen bg-blinkGray50 dark:bg-blinkNeutral900 gap-0.5">
@@ -26,94 +50,52 @@ export const DashboardPage = () => {
         <div className="w-full h-full flex flex-col lg:flex-row">
           <div className="flex flex-1 h-full overflow-y-auto flex-col p-6 gap-6">
             <div className="grid gap-6 lg:grid-cols-4 md:grid-cols-3 sm:grid-cols-2">
-              <Card role="region" aria-labelledby="text-card-icon-action-title">
-                <CardContent>
-                  <div className="blink-surface-light p-2 rounded-full inline-block">
-                    <EyeIcon className="w-8 h-8 rounded-full" />
-                  </div>
-                  <h3
-                    id="text-card-icon-action-title"
-                    className="text-xl blink-text-primary my-2"
-                  >
-                    32 567{" "}
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm blink-text-subdued">
-                      Views last month
-                    </p>
-                    <PillLightGreen className="h-6 inline-flex items-center gap-2">
-                      10% ↑
-                    </PillLightGreen>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card role="region" aria-labelledby="text-card-icon-action-title">
-                <CardContent>
-                  <div className="blink-surface-light p-2 rounded-full inline-block">
-                    <EyeIcon className="w-8 h-8 rounded-full" />
-                  </div>
-                  <h3
-                    id="text-card-icon-action-title"
-                    className="text-xl blink-text-primary my-2"
-                  >
-                    11 334{" "}
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm blink-text-subdued">
-                      Views last 7 days
-                    </p>
-                    <PillLightGreen className="h-6 inline-flex items-center gap-2">
-                      23% ↑
-                    </PillLightGreen>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card role="region" aria-labelledby="text-card-icon-action-title">
-                <CardContent>
-                  <div className="blink-surface-light p-2 rounded-full inline-block">
-                    <DollarIcon className="w-8 h-8 rounded-full" />
-                  </div>
-                  <h3
-                    id="text-card-icon-action-title"
-                    className="text-xl blink-text-primary my-2"
-                  >
-                    11 035
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm blink-text-subdued">
-                      Revenue last year
-                    </p>
-                    <PillLightCoral className="h-6 inline-flex items-center gap-2">
-                      12% ↓
-                    </PillLightCoral>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card role="region" aria-labelledby="text-card-icon-action-title">
-                <CardContent>
-                  <div className="blink-surface-light p-2 rounded-full inline-block">
-                    <DollarIcon className="w-8 h-8 rounded-full" />
-                  </div>
-                  <h3
-                    id="text-card-icon-action-title"
-                    className="text-xl blink-text-primary my-2"
-                  >
-                    800
-                  </h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm blink-text-subdued">
-                      Revenue last month
-                    </p>
-                    <PillLightCoral className="h-6 inline-flex items-center gap-2">
-                      6% ↓
-                    </PillLightCoral>
-                  </div>
-                </CardContent>
-              </Card>
+              <StatCard
+                icon={<EyeIcon className="w-8 h-8 rounded-full" />}
+                value="32 567"
+                description="Views last month"
+                pill={
+                  <PillLightGreen className="h-6 inline-flex items-center gap-2">
+                    10% ↑
+                  </PillLightGreen>
+                }
+                ariaId="views-month"
+              />
+              <StatCard
+                icon={<EyeIcon className="w-8 h-8 rounded-full" />}
+                value="11 334"
+                description="Views last 7 days"
+                pill={
+                  <PillLightGreen className="h-6 inline-flex items-center gap-2">
+                    23% ↑
+                  </PillLightGreen>
+                }
+                ariaId="views-week"
+              />
+              <StatCard
+                icon={<DollarIcon className="w-8 h-8 rounded-full" />}
+                value="11 035"
+                description="Revenue last year"
+                pill={
+                  <PillLightCoral className="h-6 inline-flex items-center gap-2">
+                    12% ↓
+                  </PillLightCoral>
+                }
+                ariaId="revenue-year"
+              />
+              <StatCard
+                icon={<DollarIcon className="w-8 h-8 rounded-full" />}
+                value="800"
+                description="Revenue last month"
+                pill={
+                  <PillLightCoral className="h-6 inline-flex items-center gap-2">
+                    6% ↓
+                  </PillLightCoral>
+                }
+                ariaId="revenue-month"
+              />
             </div>
+
             <div className="blink-surface-default border blink-border-container-white rounded-lg p-4">
               <h3 className="text-xl bold pb-6 px-2">
                 Website statistics last three month
@@ -130,51 +112,50 @@ export const DashboardPage = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    <TableRow>
-                      <TableCell>Unknown</TableCell>
-                      <TableCell>11 355</TableCell>
-                      <TableCell>2,123 $</TableCell>
-                      <TableCell>
-                        <PillLightGreen className="h-6 inline-flex items-center gap-2">
-                          23% ↑
-                        </PillLightGreen>
-                      </TableCell>
-                      <TableCell>
-                        <Button appearance="text" className="w-10">
-                          <DotsVerticalIcon className="w-8 h-8 shrink-0" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Google search</TableCell>
-                      <TableCell>4 235</TableCell>
-                      <TableCell>999 $</TableCell>
-                      <TableCell>
-                        <PillLightGreen className="h-6 inline-flex items-center gap-2">
-                          3% ↑
-                        </PillLightGreen>
-                      </TableCell>
-                      <TableCell>
-                        <Button appearance="text" className="w-10">
-                          <DotsVerticalIcon className="w-8 h-8 shrink-0" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                    <TableRow>
-                      <TableCell>Google ads</TableCell>
-                      <TableCell>4 560</TableCell>
-                      <TableCell>884 $</TableCell>
-                      <TableCell>
-                        <PillLightCoral className="h-6 inline-flex items-center gap-2">
-                          6% ↓
-                        </PillLightCoral>
-                      </TableCell>
-                      <TableCell>
-                        <Button appearance="text" className="w-10">
-                          <DotsVerticalIcon className="w-8 h-8 shrink-0" />
-                        </Button>
-                      </TableCell>
-                    </TableRow>
+                    {[
+                      {
+                        source: "Unknown",
+                        visitors: "11 355",
+                        revenue: "2,123 $",
+                        pill: (
+                          <PillLightGreen className="h-6 inline-flex items-center gap-2">
+                            23% ↑
+                          </PillLightGreen>
+                        ),
+                      },
+                      {
+                        source: "Google search",
+                        visitors: "4 235",
+                        revenue: "999 $",
+                        pill: (
+                          <PillLightGreen className="h-6 inline-flex items-center gap-2">
+                            3% ↑
+                          </PillLightGreen>
+                        ),
+                      },
+                      {
+                        source: "Google ads",
+                        visitors: "4 560",
+                        revenue: "884 $",
+                        pill: (
+                          <PillLightCoral className="h-6 inline-flex items-center gap-2">
+                            6% ↓
+                          </PillLightCoral>
+                        ),
+                      },
+                    ].map((row, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell>{row.source}</TableCell>
+                        <TableCell>{row.visitors}</TableCell>
+                        <TableCell>{row.revenue}</TableCell>
+                        <TableCell>{row.pill}</TableCell>
+                        <TableCell>
+                          <Button appearance="text" className="w-10">
+                            <DotsVerticalIcon className="w-8 h-8 shrink-0" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
               </div>
