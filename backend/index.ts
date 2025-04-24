@@ -1,57 +1,60 @@
 import { serve } from "@hono/node-server";
 import { Hono } from "hono";
 import path from "path";
-import * as fs from "node:fs";
+import fs from "node:fs";
+import mime from "mime-types";
 
 const app = new Hono();
-
+const port = 3000;
+const dist = path.join(process.cwd(), "dist");
 const etag = 'W/"12345-67890"';
 
-const dist = path.join(process.cwd(), "dist");
+// Утилита: задержка
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
+// Утилита: безопасный путь
+const safePath = (base: string, target: string) =>
+  path.resolve(base, path.normalize("." + target));
+
+// Middleware: отдача ассетов
 app.get("/assets/*", async (c) => {
-  const resourcePath = path.join(dist, c.req.path);
-  const resourceContent = fs.readFileSync(resourcePath).toString();
+  const assetPath = c.req.path.replace("/assets", ""); // "/main.js"
+  const fullPath = safePath(dist, assetPath);
 
-  // Check browser cache headers
-  const ifNoneMatchHeader = c.req.header("If-None-Match");
-
-  const lastMonth = new Date();
-  lastMonth.setMonth(lastMonth.getMonth() - 1);
-
-  // Set cache headers
-  c.header("Cache-Control", "max-age=0,must-revalidate");
-  c.header("ETag", `"${etag}"`);
-
-  // Set MIME type
-  if (resourcePath.endsWith(".css")) {
-    c.header("Content-Type", "text/css");
-  } else if (resourcePath.endsWith(".js")) {
-    c.header("Content-Type", "application/javascript");
+  if (!fs.existsSync(fullPath)) {
+    return c.text("Asset not found", 404);
   }
 
-  if (ifNoneMatchHeader === `"${etag}"`) {
-    c.status(304);
-    return c.body("");
+  const ifNoneMatch = c.req.header("If-None-Match");
+
+  // ETag check
+  if (ifNoneMatch === etag) {
+    return c.body("", 304);
   }
 
-  return c.body(resourceContent, 200);
+  const content = fs.readFileSync(fullPath);
+  const contentType = mime.lookup(fullPath) || "application/octet-stream";
+
+  c.header("Content-Type", contentType);
+  c.header("Cache-Control", "max-age=0, must-revalidate");
+  c.header("ETag", etag);
+
+  return c.body(content);
 });
 
-export const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-
+// Роут для index.html
 app.get("/", async (c) => {
-  const html = fs.readFileSync(path.join(dist, "index.html")).toString();
+  const indexPath = path.join(dist, "index.html");
 
-  // await sleep(500);
+  if (!fs.existsSync(indexPath)) {
+    return c.text("index.html not found", 404);
+  }
 
+  const html = fs.readFileSync(indexPath).toString();
+
+  // await sleep(500); // Uncomment for testing latency
   return c.html(html);
 });
 
-const port = 3000;
-console.log(`Server is running on http://localhost:${port}`);
-
-serve({
-  fetch: app.fetch,
-  port,
-});
+console.log(`🚀 Server running at http://localhost:${port}`);
+serve({ fetch: app.fetch, port });
